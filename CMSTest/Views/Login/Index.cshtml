@@ -1,0 +1,59 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script>
+        function ajaxSuccess(data) {
+            console.log(data);
+            var strSplit = data.split(':');
+            if (strSplit[0] == 'no') {
+                $("#lbltxtMsg").text(strSplit[1]);
+            } else if (strSplit[0] == 'ok') {
+                $("#lbltxtMsg").text(strSplit[1]);
+                window.location.href = '/Home/Index';
+            } else {
+                $("#lbltxtMsg").text("系统繁忙，请稍后再试");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div>
+        @using (Ajax.BeginForm("ProcessLogin", "Login", new AjaxOptions { HttpMethod = "post", LoadingElementId = "loading", OnSuccess = "ajaxSuccess" }))
+        {
+            <table>
+                <tr>
+                    <td>用户名:</td>
+                    <td>@Html.TextBox("txtUserName")</td>
+                </tr>
+                <tr>
+                    <td>用户密码:</td>
+                    <td>@Html.Password("txtPwd")</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="submit" name="AjaxSubmit" value="登录" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label id="lbltxtMsg" style="color:red;"></label>
+                    </td>
+                </tr>
+            </table>
+        }
+        <div id="loading" style="display:none">
+            <img src="~/Content/04_ico_loading2.gif" />
+        </div>
+    </div>
+</body>
+</html>

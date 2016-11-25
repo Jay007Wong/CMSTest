@@ -1,0 +1,88 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Content/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Content/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/themes/demo.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Scripts/jquery.easyui.min.js"></script>
+    <script src="~/Scripts/easyui-lang-zh_CN.js"></script>
+    <script>
+        $(function () {
+            BindClickEvent();
+        })
+
+        function BindClickEvent() {
+            $(".detailListLink").click(function () {
+                var strText = $(this).text();
+                var url = $(this).attr('url');
+                var isExits = $("#ttCenter").tabs('exists', strText);
+
+                //判断选项卡是否存在
+                if (isExits) {
+                    $("#ttCenter").tabs('select', strText);
+                } else {
+                    // 添加一个新的标签页面板（tab panel）
+                    $('#ttCenter').tabs('add', {
+                        title: strText,
+                        content: ShowContent(url),
+                        closable: true,
+                    });
+                }
+            })
+
+        }
+
+
+        function ShowContent(url) {
+            var strHtml = '<iframe src="' + url + '" scrolling="no" width="100%" height="100%" frameborder="0"></iframe>';
+        }
+    </script>
+</head>
+<body class="easyui-layout">
+    <!--页面顶部设置开始-->
+    <div data-options="region:'north',border:false" style="height:60px;background:#B3DFDA;padding:10px"><h1 style="text-align:center;">ASP.NET MVC4 Demo</h1></div>
+    <!--页面顶部设置结束-->
+    <!--页面左边设置开始-->
+    <div data-options="region:'west',split:true,title:'West'" style="width:150px;padding:10px;">
+
+        <div class="easyui-accordion" style="width:auto;height:200px;">
+            <div title="新闻管理" data-options="iconCls:'icon-ok'" style="overflow:auto;padding:10px;">
+                <a href="Javascript:void(0)" class="detailListLink" url="/AdminNewList/Index">新闻管理</a>
+            </div>
+            <div title="评论管理" data-options="iconCls:'icon-help'" style="padding:10px;">
+                <a href="Javascript:void(0)" class="detailListLink" url="/AdminCommentList/Index">评论管理</a>
+            </div>
+        </div>
+
+    </div>
+    <!--页面左边设置结束-->
+    @*<div data-options="region:'east',split:true,collapsed:true,title:'East'" style="width:100px;padding:10px;">east region</div>*@
+
+
+    <!--页面中部设置开始-->
+    <div data-options="region:'center',title:'Center'">
+        <div class="easyui-tabs" style="width:700px;height:250px" fit="true" id="ttCenter">
+            <div title="首页" style="padding:10px;overflow:hidden;">
+                <h1>
+                    欢迎您：@ViewBag.userLogin<br />
+                    当前时间:@DateTime.Now.ToString()
+                </h1>
+            </div>
+        </div>
+
+    </div>
+    <!--页面中部设置开始-->
+    <!--页面底部设置开始-->
+    <div data-options="region:'south',border:false" style="height:50px;background:#A9FACD;padding:10px;"><h4 style="text-align:center;">Copyright &copy; JayWong</h4></div>
+    <!--页面底部设置结束-->
+</body>
+</html>

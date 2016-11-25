@@ -1,0 +1,219 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+@using CMSTest.Common;
+@using CMSTest.Model;
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Content/themes/PageBar.css" rel="stylesheet" />
+    <link href="~/Content/themes/TableStyle.css" rel="stylesheet" />
+    <link href="~/Content/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Content/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/themes/demo.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Scripts/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/jquery.easyui.min.js"></script>
+    <script>
+        $(function () {
+            $("#divDetails").css("display", "none");
+            $("#divAdd").css("display", "none");
+
+            //显示详细内容
+            $("#newInfoDetails").click(function () {
+                ShowNewInfoDetail();
+            })
+
+            //删除信息
+            $(".newInfoDelete").click(function () {
+                DeleteNewInfo($(this).attr("dis"), this);
+            })
+
+            //修改信息
+            $(".newInfoUpdate").click(function () {
+                UpdateNewInfo($(this).attr("dis"));
+            })
+
+            //添加信息
+            $("#addInfo").click(function () {
+                AddNewInfo();
+            })
+        });
+
+        //显示详细信息
+        function ShowNewInfoDetail(id) {
+            $.post("/AdminNewList/GetNewInfoModel", { "id": id }, function (data) {
+                $("#title").text(data.Title);
+                $("#author").text(data.Author);
+                $("#subDateTime").text(data.SubDateTime);
+                $("#msg").text(data.Msg);
+            }, "json");
+
+
+            $("#dvDetails").css("display", "block");
+
+            $('#dvDetails').dialog({
+                title: '详细内容',
+                width: 400,
+                height: 300,
+                closed: false,
+                cache: false,
+                modal: true,
+                minimizable: true,
+                maximizable: true,
+                buttons: [{
+                    text: 'Ok',
+                    iconCls: 'icon-ok',
+                    handler: function () {
+                        alert('ok');
+                    }
+                }, {
+                    text: 'Cancel',
+                    handler: function () {
+                        $('#dvDetails').dialog('close');
+                    }
+                }]
+
+            });
+        }
+
+        //删除NewInfo记录
+        function DeleteNewInfo(id, control) {
+            $.messager.confirm("提示", "你确定要删除这条记录吗？", function (data) {
+                $.post("/AdminNewListController/DeleteNewInfo", { "id": id }, function (data) {
+                    if (data == "ok") {
+                        //确定删除
+                        $.messager.show({
+                            title: '提示',
+                            msg: '您已经成功删除Id为:' + id + "的数据",
+                            timeout: 5000,
+                            showType: 'slide'
+                        });
+                        //删除页面的信息
+                        $(control).parent().parent().remove();
+                    }
+                });
+            });
+        }
+
+
+        //修改NewInfo信息
+        function UpdateNewInfo(id) {
+
+        }
+
+
+
+        //添加NewInfo信息
+        function AddNewInfo() {
+            $("#AddFrame").attr("src", "/AdminNewList/ShowAddInfo");
+
+            $("#divAdd").dialog({
+                title: '添加新闻',
+                top: 50,
+                left: 200,
+                width: 750,
+                height: 500,
+                closed: false,
+                cache: false,
+                collapsible: true,
+                minimizable: true,
+                maximizable: true,
+                modal: true,
+                buttons: [{
+                    text: 'ok',
+                    iconCls: 'icon-ok',
+                    handler: function () {
+                        //调用子窗体中的方法
+                        var childWindow = $("#AddFrame")[0].contentWindow;//获取子窗体的window对象
+                        childWindow.subForm();
+                    }
+                }, {
+                    text: 'Cancel',
+                    handler: function () {
+                        $("#divAdd").dialog('close');
+                    }
+
+                }]
+            });
+            $("#divAdd").css("display", "block");
+        }
+        //添加完成以后，调用该方法关闭添加窗口
+        function AfterAdd() {
+            $("#divAdd").dialog("close");
+        }
+
+    </script>
+</head>
+<body>
+    <div>
+        <a href="#" id="addInfo">添加</a>
+        @if (ViewBag.listNewInfo != null)
+            {
+            <table class="gridtable">
+                <tr>
+                    <th>编号</th>
+                    <th>标题</th>
+                    <th>作者</th>
+                    <th>时间</th>
+                    <th>详细</th>
+                    <th>删除</th>
+                    <th>修改</th>
+                </tr>
+                @foreach (NewInfo newInfo in (List<NewInfo>)ViewBag.listNewInfo)
+                {
+                    <tr>
+                        <td>@newInfo.Id</td>
+                        <td>@newInfo.Title</td>
+                        <td>@newInfo.Author</td>
+                        <td>@newInfo.SubDateTime</td>
+                        <td><a href="#" class="newInfoDetails" dis="@newInfo.Id">详细</a></td>
+                        <td><a href="#" class="newInfoDelete" dis="@newInfo.Id">删除</a></td>
+                        <td><a href="#" class="newInfoUpdate" dis="@newInfo.Id">修改</a></td>
+                    </tr>
+                }
+            </table>
+            <div id="Page">
+
+            </div>
+        } else
+        {
+            <span>暂无数据</span>
+        }
+
+
+
+        <!--详细内容开始-->
+        <div id="dvDetails">
+            <table class="gridtable">
+                <tr>
+                    <td>标题</td>
+                    <td><span id="title"></span></td>
+                </tr>
+                <tr>
+                    <td>作者</td>
+                    <td><span id="author"></span></td>
+                </tr>
+                <tr>
+                    <td>时间</td>
+                    <td><span id="subDateTime"></span></td>
+                </tr>
+                <tr>
+                    <td>详细内容</td>
+                    <td><span id="msg"></span></td>
+                </tr>
+            </table>
+        </div>
+        <!--详情内容结束-->
+        <!--添加信息内容开始-->
+        <div id="divAdd" style="overflow:hidden;">
+            <iframe id="AddFrame" frameborder="0" width="100%" height="100%" scrolling="auto"></iframe>
+        </div>
+        <!--添加信息内容结束-->
+    </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+﻿#Page {
+    float: left;
+    height: 50px;
+    font-family: Verdana;
+}
+
+    #Page a {
+        float: left;
+        margin: 10px 1px 0 1px;
+        width: 26px;
+        height: 20px;
+        line-height: 20px;
+        color: #91ad00;
+        font: 12px;
+        text-align: center;
+        text-decoration: none;
+        border: 1px solid #91ad00;
+    }
+
+        #Page a:hover {
+            /*position: relative;*/
+            /*margin: 0 -10px 0 -10px;*/
+            /*padding: 0 1px;*/
+            /*width: 30px;*/
+            /*line-height: 40px;*/
+            /*height: 40px;*/
+            color: #000;
+            border: 1px solid #91ad00;
+            background: url() no-repeat left -10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+    #Page span {
+        float: left;
+        line-height: 165%;
+        padding: 0px 8px;
+        margin: 10px 1px 0 1px;
+        border: 1px solid #91ad00;
+        background: #91ad00;
+        color: #FFF;
+        font-weight: bold;
+    }
