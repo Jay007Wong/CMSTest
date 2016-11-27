@@ -23,6 +23,65 @@
     <script src="~/Scripts/jquery.easyui.min.js"></script>
     <script src="~/Scripts/easyui-lang-zh_CN.js"></script>
     <script>
+        kindEditor.ready(function (k) {
+            var editor1 = k.create("#MsgContent", {
+                uploadJson: '/Kindeditor/asp.net/upload_json.ashx',
+                //文件管理
+                fileManagerJson: '/Kindeditor/asp.net/file_manager_json.ashx',
+                allowFileManager: true,
+                //设置编辑器创建后执行的回调函数
+                afterBlur: function () { this.sync(); },
+                afterCreate: function () {
+                    var self = this;
+                    self.sync();//把富文本编辑器的内容放到文本域中
+                }
+            });
+            prettyPrint();//要调用该方法
+        })
+
+        $(function () {
+            FileUpload();
+        });
+
+
+        function FileUpload() {
+            $("btnFileUp").click(function () {
+                if ($("#fileUpImage").val() == "") {
+                    $.messager.alert("提示", "请选择上传的文件图片", "info");
+                    return;
+                }
+
+
+                $("#form1").ajaxSubmit({
+                    type: "post",
+                    url: "/AdminNewList/FileUpload",
+                    success: function (data) {
+                        var serverData = data.split(":");
+                        if (serverData[0] == "ok") {
+                            $("#showImage").append("<img src='" + serverData[1] + "' width='40px' height='40px'/>");
+                            $("#hidImagePath").val(serverData[1]);//将路径赋值给隐藏域，提交表单时将提交给服务端保存到数据库
+                            $("#txtMsg").text();
+                        } else if (serverData[0] == "no") {
+                            $("#txtMsg").text(serverData[1]);
+                        }
+                        else {
+                            $("#txtMsg").text("系统繁忙，请稍后再试....");
+                        }
+                    }
+                });
+            });
+        }
+
+        //提交表单
+        function subForm() {
+            $("#form1").submit();
+        }
+        //添加完成以后，调用该方法，关闭添加的窗口
+        //调用父窗体AfterAdd方法
+        function AfterAdd() {
+            window.parent.AfterAdd();
+        }
+
 
     </script>
 </head>
@@ -30,7 +89,32 @@
     <div>
         @using (Ajax.BeginForm("AddNewInfo", "AdminNewList", new AjaxOptions() { HttpMethod = "post", OnSuccess = "AfterAdd" }, new { id = "form1" }))
         {
-
+            <table class="gridtable">
+                <tr>
+                    <td>新闻标题</td>
+                    <td><input type="text" name="Title" value="" /></td>
+                </tr>
+                <tr>
+                    <td>作者</td>
+                    <td><input type="text" name="Author" value="" /></td>
+                </tr>
+                <tr>
+                    <td>上传图片</td>
+                    <td>
+                        <input type="file" name="fileUp" id="fileUpImage" />
+                        <input type="submit" value="上传图片" id="btnFileUp" />
+                        <input type="hidden" name="ImagePath" value="hidImagePath" />
+                        <div id="showImage"></div>
+                        <span id="txtMsg" style="color:red"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>新闻内容</td>
+                    <td>
+                        <textarea id="MsgContent" cols="100" rows="8" style="width:400px;height:250px;visibility:hidden" name="Msg"></textarea>
+                    </td>
+                </tr>
+            </table>
         }
     </div>
 </body>
